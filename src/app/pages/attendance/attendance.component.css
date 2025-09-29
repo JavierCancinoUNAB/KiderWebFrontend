@@ -1,0 +1,8 @@
+.title{ font-family:'Montserrat','Segoe UI','Helvetica Neue',Arial,sans-serif; color:#ff2a2a; font-weight:800; }
+.panel{ background:#0a0a0a; border:1px solid #2a0000; }
+.in{ background:#050000; color:#ffb3b3; border:1px solid #2a0000; }
+.att thead th{ font-weight:800; }
+.btn-present{ background:#021; color:#7fffd4; border:2px solid transparent; }
+.btn-absent{ background:#210; color:#ff9b9b; border:2px solid transparent; }
+.btn-present.active, .btn-absent.active{ border-color:#ff4d4d; }
+.c1{ width:28%; } .c2{ width:14%; } .c3{ width:14%; } .c4{ width:44%; }

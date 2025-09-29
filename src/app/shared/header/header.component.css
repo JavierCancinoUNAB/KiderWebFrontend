@@ -1,0 +1,11 @@
+.app-header{
+  position: fixed; top:0; left:0; right:0; z-index: 1000;
+  background: #000; border-bottom: 1px solid #440000;
+}
+.brand{
+  font-family: 'Montserrat', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 34px; font-weight: 800; color: #ff2a2a; letter-spacing: .5px;
+  cursor: pointer; user-select: none;
+}
+a.btn{ --bs-btn-border-color:#661111; --bs-btn-color:#ff4d4d; }
+a.btn:hover{ background:#150000; }

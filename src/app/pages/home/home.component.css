@@ -1,0 +1,16 @@
+.title{
+  font-family: 'Montserrat','Segoe UI','Helvetica Neue',Arial,sans-serif;
+  color:#ff2a2a; font-weight:800;
+}
+.card-student{
+  background:#0a0a0a; border:1px solid #2a0000; border-radius:14px; overflow:hidden;
+  transition: transform .18s ease, box-shadow .18s ease; outline: none;
+}
+.card-student:hover, .card-student:focus{
+  transform: translateY(-6px); box-shadow: 0 12px 26px rgba(255,0,0,.12);
+}
+.thumb{ width:100%; padding-top:62%; background-size: cover; background-position:center; transition: transform .18s ease, box-shadow .18s ease; }
+.thumb:hover{ transform: translateY(-4px) scale(1.01); box-shadow:0 10px 22px rgba(255,0,0,.18); }
+.info{ color:#ff8080; }
+.info h2{ color:#ff4d4d; font-weight:800; }
+.in{ background:#050000; color:#ffb3b3; border:1px solid #2a0000; }

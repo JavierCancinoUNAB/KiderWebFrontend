@@ -1,0 +1,41 @@
+<section>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="title m-0">Estudiantes</h1>
+    <div class="d-flex gap-2">
+      <a routerLink="/asistencia" class="btn btn-outline-danger">Agregar Asistencia</a>
+      <a routerLink="/reporte" class="btn btn-outline-danger">Ver % Asistencia</a>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let s of sorted()">
+      <article class="card-student" tabindex="0">
+        <div class="thumb" [style.backgroundImage]="'url(' + (s.fotoUrl || 'https://picsum.photos/400?blur=2') + ')'" title="Cambiar imagen (editable por el usuario)"></div>
+        <div class="info p-2">
+          <h2 class="h5 m-0">{{s.apellido}}, {{s.nombre}}</h2>
+          <p class="mb-2 small">{{s.edad}} años — Nacido en {{s.nacimiento}}</p>
+          <button class="btn btn-sm btn-outline-danger" (click)="alert(s.descripcion || 'Sin descripción')">Descripción</button>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button class="btn btn-outline-danger" (click)="openAdd()">+ Agregar estudiante</button>
+  </div>
+
+  <div class="add-panel mt-2 p-3 rounded-3" *ngIf="showAdd">
+    <div class="row g-2">
+      <div class="col-md-6"><input class="form-control in" placeholder="Nombre" [(ngModel)]="nuevo.nombre"></div>
+      <div class="col-md-6"><input class="form-control in" placeholder="Apellido" [(ngModel)]="nuevo.apellido"></div>
+      <div class="col-md-4"><input class="form-control in" type="number" min="1" max="18" placeholder="Edad" [(ngModel)]="nuevo.edad"></div>
+      <div class="col-md-8"><input class="form-control in" placeholder="Lugar de nacimiento" [(ngModel)]="nuevo.nacimiento"></div>
+      <div class="col-12"><input class="form-control in" placeholder="URL de foto (opcional)" [(ngModel)]="nuevo.fotoUrl"></div>
+      <div class="col-12"><textarea class="form-control in" rows="2" placeholder="Descripción (opcional)" [(ngModel)]="nuevo.descripcion"></textarea></div>
+    </div>
+    <div class="d-flex gap-2 mt-2">
+      <button class="btn btn-danger" (click)="addStudent()">Guardar</button>
+      <button class="btn btn-outline-secondary" (click)="showAdd=false">Cancelar</button>
+    </div>
+  </div>
+</section>

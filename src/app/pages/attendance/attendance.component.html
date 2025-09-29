@@ -1,0 +1,61 @@
+<section>
+  <h1 class="title mb-3">Asistencia</h1>
+
+  <div *ngIf="step() === 'fecha'" class="panel p-3 rounded-3">
+    <label class="form-label text-warning">Día/Mes/Año</label>
+    <input class="form-control in" type="date" [min]="min" [max]="max"
+           [ngModel]="fechaISO()" (ngModelChange)="fechaISO.set($event)">
+    <button class="btn btn-danger mt-2" (click)="aceptarFecha()">Aceptar</button>
+  </div>
+
+  <div *ngIf="step() === 'tabla'">
+    <div class="d-flex flex-wrap gap-2 my-2">
+      <button class="btn btn-outline-success" (click)="marcarTodos('PRESENTE')">Marcar TODOS Presente</button>
+      <button class="btn btn-outline-danger" (click)="marcarTodos('AUSENTE')">Marcar TODOS Ausente</button>
+      <a class="btn btn-outline-secondary" routerLink="/reporte">Ir a Registro de Asistencia</a>
+    </div>
+
+    <div class="table-responsive rounded-3 border border-danger-subtle">
+      <table class="table table-dark table-hover align-middle m-0 att">
+        <thead class="table-danger">
+          <tr>
+            <th class="c1">Nombre / Apellido</th>
+            <th class="c2">Presente</th>
+            <th class="c3">Ausente</th>
+            <th class="c4">Comentario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let fila of filas(); let i = index">
+            <td>
+              {{ (alumnos()[i]?.nombre || '?') }} {{ (alumnos()[i]?.apellido || '') }}
+            </td>
+            <td>
+              <button class="btn btn-lg w-100 btn-present" [class.active]="fila.estado==='PRESENTE'"
+                      (click)="setEstado(i,'PRESENTE')">Presente</button>
+            </td>
+            <td>
+              <button class="btn btn-lg w-100 btn-absent" [class.active]="fila.estado==='AUSENTE'"
+                      (click)="setEstado(i,'AUSENTE')">Ausente</button>
+            </td>
+            <td>
+              <input class="form-control in" maxlength="150"
+                     [value]="fila.comentario"
+                     (input)="setComentario(i, $any($event.target).value)"
+                     placeholder="Motivo (máx 150 car.)">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-2">
+      <button class="btn btn-outline-danger" (click)="agregarAlumno()">+ Agregar estudiante</button>
+    </div>
+
+    <div class="d-flex justify-content-between gap-2 mt-3">
+      <button class="btn btn-outline-secondary btn-lg" (click)="anterior()">Anterior</button>
+      <button class="btn btn-danger btn-lg" (click)="siguiente()">Siguiente (Guardar)</button>
+    </div>
+  </div>
+</section>
