@@ -1,0 +1,19 @@
+## Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+## Angular build/cache
+.angular/
+dist/
+tmp/
+out-tsc/
+
+## IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
