@@ -1,71 +1,57 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AttendanceService } from '../../core/attendance.service';
 import { AttendanceRecord, AttendanceRow, Student } from '../../core/models';
-import { Router, RouterLink } from '@angular/router';
+import { DatePickerComponent } from '../../shared/date-picker/date-picker.component';
+import { WeatherWidgetComponent } from '../../shared/weather-widget/weather-widget.component';
 
 @Component({
   standalone: true,
   selector: 'app-attendance',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, DatePickerComponent, WeatherWidgetComponent],
   templateUrl: './attendance.component.html',
   styleUrls: ['./attendance.component.css']
 })
-export class AttendanceComponent {
+export class AttendanceComponent implements OnInit {
   private svc = inject(AttendanceService);
   private router = inject(Router);
 
-  min = '1950-01-01'; max = '2100-12-31';
-  fechaISO = signal<string>('');
   step = signal<'fecha'|'tabla'>('fecha');
-
-  alumnos = signal<Student[]>([]);
+  fechaISO = signal<string>('');
   filas = signal<AttendanceRow[]>([]);
+  alumnos = signal<Student[]>([]);
+  recentAdded = signal(this.svc.getRecentAdded());
 
-  constructor(){
-    const sorted = this.svc.getStudents().sort((a,b)=>a.apellido.localeCompare(b.apellido,'es'));
-    this.alumnos.set(sorted);
-  }
+  ngOnInit() { this.alumnos.set(this.svc.getStudents()); }
 
-  aceptarFecha(){
-    if (!this.fechaISO()) return;
-    const rec = this.svc.getRecordByDate(this.fechaISO());
-    if (rec) {
-      this.filas.set(rec.filas);
-    } else {
-      this.filas.set(this.alumnos().map(s => ({ studentId: s.id, estado: '', comentario:'' })));
-    }
+  aceptarFecha() {
+    const f = this.fechaISO();
+    if (!f) { alert('Selecciona una fecha.'); return; }
+    const existing = this.svc.getRecordByDate(f);
+    if (existing) this.filas.set(existing.filas.map(x => ({ ...x })));
+    else this.filas.set(this.alumnos().map(s => ({ studentId: s.id, estado: '', comentario: '' })));
     this.step.set('tabla');
   }
 
-  marcarTodos(estado: 'PRESENTE'|'AUSENTE'){
-    this.filas.update(rows => rows.map(r => ({...r, estado})));
+  marcarTodos(estado: 'PRESENTE'|'AUSENTE') { this.filas.update(rows => rows.map(r => ({ ...r, estado }))); }
+  setEstado(i: number, estado: 'PRESENTE'|'AUSENTE') { this.filas.update(rows => rows.map((r, idx) => idx === i ? { ...r, estado } : r)); }
+  setComentario(i: number, txt: string) { this.filas.update(rows => rows.map((r, idx) => idx === i ? { ...r, comentario: txt } : r)); }
+
+  trackByStudent = (_: number, r: AttendanceRow) => r.studentId;
+
+  alumnoNombre(r: AttendanceRow) {
+    const s = this.alumnos().find(a => a.id === r.studentId);
+    return s ? `${s.apellido}, ${s.nombre}` : r.studentId;
   }
 
-  setEstado(i: number, estado: 'PRESENTE'|'AUSENTE'){
-    const rows = [...this.filas()];
-    rows[i] = {...rows[i], estado};
-    this.filas.set(rows);
-  }
+  agregarAlumno() { this.router.navigate(['/estudiantes']); }
+  anterior() { this.step.set('fecha'); }
 
-  setComentario(i: number, value: string){
-    const rows = [...this.filas()];
-    rows[i] = {...rows[i], comentario: value.slice(0,150)};
-    this.filas.set(rows);
-  }
-
-  agregarAlumno(){
-    const tmpId = 'tmp_' + crypto.randomUUID();
-    this.alumnos.update(a => [...a, { id: tmpId, nombre:'Nuevo', apellido:'Alumno', edad:5, nacimiento:'' }]);
-    this.filas.update(f => [...f, { studentId: tmpId, estado:'', comentario:'' }]);
-  }
-
-  anterior(){ this.step.set('fecha'); }
-
-  siguiente(){
+  siguiente() {
     const rec: AttendanceRecord = { fechaISO: this.fechaISO(), filas: this.filas() };
-    this.svc.upsertRecord(rec);
-    this.router.navigate(['/reporte'], { queryParams: { fecha: this.fechaISO() }});
+    this.svc.saveRecord(rec);
+    this.router.navigate(['/reporte'], { queryParams: { fecha: this.fechaISO() } });
   }
 }

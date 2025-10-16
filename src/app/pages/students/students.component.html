@@ -1,0 +1,78 @@
+<section>
+  <h1 class="title mb-3">Estudiantes</h1>
+
+  <div class="panel p-3 rounded-3 border border-danger-subtle">
+    <div class="row g-2">
+  <div class="col-md-3"><input class="form-control in" placeholder="Nombre" aria-label="Nombre" [(ngModel)]="nuevo.nombre"></div>
+  <div class="col-md-3"><input class="form-control in" placeholder="Apellido" aria-label="Apellido" [(ngModel)]="nuevo.apellido"></div>
+  <div class="col-md-2"><input class="form-control in" type="number" placeholder="Edad" aria-label="Edad" min="1" [(ngModel)]="nuevo.edad"></div>
+  <div class="col-md-2"><input class="form-control in" type="date" placeholder="Nacimiento" aria-label="Nacimiento" [(ngModel)]="nuevo.nacimiento"></div>
+      <div class="col-md-6">
+        <textarea class="form-control in" rows="2" placeholder="Descripción (opcional)" aria-label="Descripción" [(ngModel)]="nuevo.descripcion"></textarea>
+      </div>
+      <div class="col-md-4">
+        <div class="image-preview me-2" *ngIf="nuevo.imagen">
+          <img [src]="nuevo.imagen" alt="Previsualización imagen nuevo" />
+          <button class="btn btn-danger btn-sm remove-image" type="button" (click)="removeImage('nuevo')" aria-label="Quitar imagen">×</button>
+        </div>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <input type="file" accept="image/*" (change)="onFileSelected($event,'nuevo')" aria-label="Seleccionar imagen" />
+          <div class="drop-zone border border-danger-subtle rounded p-2 text-muted"
+               (drop)="onDropFile($event,'nuevo')" (dragover)="onDragOver($event)"
+               aria-label="Arrastrar imagen aquí">Arrastra una imagen aquí</div>
+        </div>
+      </div>
+      <div class="col-md-2"><button class="btn btn-danger w-100" (click)="crear()">Agregar</button></div>
+    </div>
+  </div>
+
+  <div class="table-responsive rounded-3 border border-danger-subtle mt-3">
+    <table class="table table-dark table-hover align-middle m-0">
+      <thead><tr><th></th><th>Nombre</th><th>Edad</th><th>Nacimiento</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let s of students()">
+          <td width="60">
+            <img *ngIf="s.imagen; else noImg" [src]="s.imagen" class="student-avatar" alt="Foto de {{ s.nombre }} {{ s.apellido }}" />
+            <ng-template #noImg><div class="student-avatar d-flex align-items-center justify-content-center bg-dark text-muted">?</div></ng-template>
+          </td>
+          <td>{{ s.apellido }}, {{ s.nombre }}</td>
+          <td>{{ s.edad }}</td>
+          <td>{{ s.nacimiento }}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-warning me-2" (click)="startEdit(s)">Editar</button>
+            <button class="btn btn-sm btn-outline-danger" (click)="del(s.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel p-3 rounded-3 border border-danger-subtle mt-3" *ngIf="edit() as e">
+    <div class="row g-2">
+  <div class="col-md-3"><input class="form-control in" placeholder="Nombre" aria-label="Nombre" [(ngModel)]="e.nombre"></div>
+  <div class="col-md-3"><input class="form-control in" placeholder="Apellido" aria-label="Apellido" [(ngModel)]="e.apellido"></div>
+  <div class="col-md-2"><input class="form-control in" type="number" placeholder="Edad" aria-label="Edad" min="1" [(ngModel)]="e.edad"></div>
+  <div class="col-md-2"><input class="form-control in" type="date" placeholder="Nacimiento" aria-label="Nacimiento" [(ngModel)]="e.nacimiento"></div>
+      <div class="col-12">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control in" rows="3" placeholder="Descripción del estudiante" aria-label="Descripción del estudiante" [(ngModel)]="e.descripcion"></textarea>
+      </div>
+      <div class="col-md-6 d-flex align-items-start gap-2 flex-wrap">
+        <div class="image-preview" *ngIf="e.imagen">
+          <img [src]="e.imagen" alt="Previsualización imagen" />
+          <button class="btn btn-danger btn-sm remove-image" type="button" (click)="removeImage('edit')" aria-label="Quitar imagen">×</button>
+        </div>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+          <input type="file" accept="image/*" (change)="onFileSelected($event,'edit')" aria-label="Seleccionar imagen" />
+          <div class="drop-zone border border-danger-subtle rounded p-2 text-muted"
+               (drop)="onDropFile($event,'edit')" (dragover)="onDragOver($event)"
+               aria-label="Arrastrar imagen aquí">Arrastra una imagen aquí</div>
+        </div>
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button class="btn btn-success flex-fill" (click)="saveEdit()">Guardar</button>
+        <button class="btn btn-secondary flex-fill" (click)="cancelEdit()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</section>

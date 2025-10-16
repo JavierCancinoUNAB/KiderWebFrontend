@@ -3,8 +3,9 @@ export interface Student {
   nombre: string;
   apellido: string;
   edad: number;
-  nacimiento: string;
+  nacimiento: string; // yyyy-MM-dd
   fotoUrl?: string;
+  imagen?: string;
   descripcion?: string;
 }
 
@@ -19,4 +20,9 @@ export interface AttendanceRow {
 export interface AttendanceRecord {
   fechaISO: string;
   filas: AttendanceRow[];
+}
+
+export interface RecentAdded {
+  fechaISO: string;
+  timestamp: number;
 }

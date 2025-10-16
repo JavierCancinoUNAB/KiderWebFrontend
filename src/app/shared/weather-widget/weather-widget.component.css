@@ -1,0 +1,7 @@
+.weather img{ filter: drop-shadow(0 2px 6px rgba(255,0,0,.25)); }
+.weather{ background:#161616; border:1px solid #3a0000; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.meta{ color:#bbb; display:flex; flex-wrap:wrap; gap:.75rem 1rem; margin-top:.25rem }
+.meta span{ white-space:nowrap }
+.forecast{ display:flex; align-items:center; gap:.5rem; flex-wrap:wrap }
+.forecast .label{ color:#bbb }
+.temp-badge{ background:#1f1f1f; color:#eee; border:1px solid #2a0000; border-radius:14px; padding:.1rem .5rem }

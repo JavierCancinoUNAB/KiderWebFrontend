@@ -1,11 +1,9 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { AttendanceComponent } from './pages/attendance/attendance.component';
-import { ReportComponent } from './pages/report/report.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, title: 'Kinder Web — Inicio' },
-  { path: 'asistencia', component: AttendanceComponent, title: 'Asistencia' },
-  { path: 'reporte', component: ReportComponent, title: 'Reporte de Asistencia' },
+  { path: '', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) },
+  { path: 'asistencia', loadComponent: () => import('./pages/attendance/attendance.component').then(m => m.AttendanceComponent) },
+  { path: 'reporte', loadComponent: () => import('./pages/report/report.component').then(m => m.ReportComponent) },
+  { path: 'estudiantes', loadComponent: () => import('./pages/students/students.component').then(m => m.StudentsComponent) },
   { path: '**', redirectTo: '' }
 ];

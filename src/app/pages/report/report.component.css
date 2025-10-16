@@ -2,6 +2,8 @@
 .panel{ background:#0a0a0a; border:1px solid #2a0000; }
 .in{ background:#050000; color:#ffb3b3; border:1px solid #2a0000; }
 .summary{ color:#ff8080; margin:8px 0 10px; }
+.icon-back { vertical-align: middle; font-size: 18px; margin-right: 4px; }
+/* opcional */
 /* Ajustes para la lista de últimos reportes en modo oscuro */
 .list-group-item { background-color:#0a0a0a; color:#ffb3b3; border-color:#2a0000; }
 .list-group-item:hover { background-color:#120000; }

@@ -6,12 +6,22 @@
 html, body{ height:100%; }
 body{
   margin:0;
-  background: var(--bg);
-  color: var(--fg-soft);
+  background: #111;
+  color: #fff;
   font-family: 'Segoe UI','Helvetica Neue',Arial,system-ui,-apple-system,sans-serif;
+  padding-top: var(--header-h, 120px); /* espacio dinámico para header fijo */
 }
 a{ color:#ff8080; }
 .btn-outline-danger{ --bs-btn-color:#ff4d4d; --bs-btn-border-color:#661111; }
 .btn-danger{ --bs-btn-bg:#8b0000; --bs-btn-border-color:#661111; }
 .table-dark{ --bs-table-bg:#070000; --bs-table-color:#ffb3b3; }
 .table-danger{ --bs-table-bg:#0d0000; --bs-table-color:#ff4d4d; }
+.panel{background:#1a1a1a}
+.title{color:#ffc107}
+
+/* Utilidades para tarjetas e imágenes */
+.card-student img{ width: 100%; height: auto; display: block; }
+.card-student .student-photo{ width: 100%; height: 220px; object-fit: cover; }
+
+/* Contenedores */
+.container-xxl{ max-width: 1280px; }

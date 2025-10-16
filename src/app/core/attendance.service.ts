@@ -1,88 +1,85 @@
 import { Injectable } from '@angular/core';
-import { AttendanceRecord, Student } from './models';
-
-const LS_STUDENTS = 'kinder_students';
-const LS_ATT = 'kinder_attendance_records';
+import { AttendanceRecord, RecentAdded, Student } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class AttendanceService {
-  private students: Student[] = [];
-  private records: AttendanceRecord[] = [];
+  private KEY_STUDENTS = 'students';
+  private KEY_RECORDS = 'attendanceRecords';
+  private KEY_RECENT = 'recentAdded';
 
-  constructor() {
-    this.load();
-    if (this.students.length === 0) {
-      const seed: Student[] = [
-        { id: '1', nombre: 'Nicolas',  apellido: 'Cheuque',  edad: 5, nacimiento: 'Viña del Mar' },
-        { id: '2', nombre: 'Javier',   apellido: 'Cancino',  edad: 5, nacimiento: 'Calama' },
-        { id: '3', nombre: 'Rodrigo',  apellido: 'Cerda',    edad: 5, nacimiento: 'Calama' },
-        { id: '4', nombre: 'José',     apellido: 'Gonzalez', edad: 5, nacimiento: 'San Antonio' },
-        { id: '5', nombre: 'Benjamin', apellido: 'Vivanco',  edad: 5, nacimiento: 'Quilpué' },
-        { id: '6', nombre: 'Pablo',    apellido: 'Sepulveda',edad: 5, nacimiento: 'Dubai' },
-        { id: '7', nombre: 'Matias',   apellido: 'Cardemil', edad: 5, nacimiento: 'Miami' },
-        { id: '8', nombre: 'Andres',   apellido: 'Tapia',    edad: 5, nacimiento: 'Alemania' },
-        { id: '9', nombre: 'Fabian',   apellido: 'Peñá',     edad: 5, nacimiento: 'Portugal' },
-        { id: '10',nombre: 'Rodrigo',  apellido: 'Rojas',    edad: 5, nacimiento: 'Antofagasta' }
-      ];
-      this.students = seed;
-      this.save();
+  // Students
+  getStudents(): Student[] {
+    const raw = localStorage.getItem(this.KEY_STUDENTS);
+    return raw ? JSON.parse(raw) : [];
+  }
+  setStudents(students: Student[]) {
+    localStorage.setItem(this.KEY_STUDENTS, JSON.stringify(students));
+  }
+  addStudent(student: Student) {
+    const list = this.getStudents();
+    list.push(student);
+    this.setStudents(list);
+  }
+  updateStudent(student: Student) {
+    const list = this.getStudents();
+    const i = list.findIndex(s => s.id === student.id);
+    if (i >= 0) list[i] = student;
+    this.setStudents(list);
+  }
+  deleteStudent(id: string) {
+    this.setStudents(this.getStudents().filter(s => s.id !== id));
+  }
+  seedDefaultStudents() {
+    if (this.getStudents().length) return;
+    const d = (n: string, a: string, e: number, f: string, desc: string): Student => ({
+      id: crypto.randomUUID(), nombre: n, apellido: a, edad: e, nacimiento: f, descripcion: desc
+    });
+    this.setStudents([
+      d('Ana','García',5,'2019-03-15','Estudiante destacada'),
+      d('Carlos','Rodríguez',4,'2020-07-22','Activo en deportes'),
+      d('María','López',5,'2019-11-08','Creativa en arte'),
+      d('Juan','Martínez',4,'2020-02-14','Le gusta la música'),
+      d('Sofía','Hernández',5,'2019-09-30','Líder del grupo'),
+      d('Diego','Gómez',4,'2020-05-18','Muy curioso')
+    ]);
+  }
+
+  // Attendance
+  getRecords(): AttendanceRecord[] {
+    const raw = localStorage.getItem(this.KEY_RECORDS);
+    return raw ? JSON.parse(raw) : [];
+  }
+  getRecordByDate(fechaISO: string) {
+    return this.getRecords().find(r => r.fechaISO === fechaISO);
+  }
+  saveRecord(record: AttendanceRecord) {
+    const list = this.getRecords();
+    const i = list.findIndex(r => r.fechaISO === record.fechaISO);
+    if (i >= 0) list[i] = record; else list.push(record);
+    localStorage.setItem(this.KEY_RECORDS, JSON.stringify(list));
+    this.addToRecent(record.fechaISO);
+  }
+  porcentajeAsistencia(r: AttendanceRecord) {
+    const total = r.filas.length || 1;
+    const p = r.filas.filter(f => f.estado === 'PRESENTE').length;
+    return Math.round((p / total) * 100);
+  }
+
+  // Recent
+  getRecentAdded(): RecentAdded[] {
+    const raw = localStorage.getItem(this.KEY_RECENT);
+    return raw ? JSON.parse(raw) : [];
+  }
+  private addToRecent(fechaISO: string) {
+    let recent = this.getRecentAdded().filter(r => r.fechaISO !== fechaISO);
+    recent.unshift({ fechaISO, timestamp: Date.now() });
+    localStorage.setItem(this.KEY_RECENT, JSON.stringify(recent.slice(0, 5)));
+  }
+  getRecentDates(limit = 5): string[] {
+    const recent = this.getRecentAdded();
+    if (recent.length) {
+      return recent.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit).map(r => r.fechaISO);
     }
-  }
-
-  getStudents(): Student[] { return [...this.students]; }
-  addStudent(s: Omit<Student, 'id'>) {
-    const id = crypto.randomUUID();
-    this.students.push({ id, ...s });
-    this.save();
-  }
-
-  updateStudent(id: string, changes: Partial<Omit<Student, 'id'>>): boolean {
-    const idx = this.students.findIndex(s => s.id === id);
-    if (idx === -1) return false;
-    this.students[idx] = { ...this.students[idx], ...changes };
-    this.save();
-    return true;
-  }
-
-  removeStudent(id: string): boolean {
-    const before = this.students.length;
-    this.students = this.students.filter(s => s.id !== id);
-    // También podríamos limpiar referencias en records, si existiera lógica de borrado cascada.
-    this.save();
-    return this.students.length < before;
-  }
-
-  getRecordByDate(fechaISO: string): AttendanceRecord | undefined {
-    return this.records.find(r => r.fechaISO === fechaISO);
-  }
-
-  getLastRecords(count = 5): AttendanceRecord[] {
-    // Ordena por fecha ISO descendente y devuelve una copia de los últimos N
-    const sorted = [...this.records].sort((a, b) => b.fechaISO.localeCompare(a.fechaISO));
-    return sorted.slice(0, Math.max(0, count));
-  }
-
-  upsertRecord(rec: AttendanceRecord) {
-    const idx = this.records.findIndex(r => r.fechaISO === rec.fechaISO);
-    if (idx >= 0) this.records[idx] = rec; else this.records.push(rec);
-    this.save();
-  }
-
-  private load() {
-    try {
-      this.students = JSON.parse(localStorage.getItem(LS_STUDENTS) || '[]');
-      this.records = JSON.parse(localStorage.getItem(LS_ATT) || '[]');
-    } catch { this.students = []; this.records = []; }
-  }
-
-  private save() {
-    localStorage.setItem(LS_STUDENTS, JSON.stringify(this.students));
-    localStorage.setItem(LS_ATT, JSON.stringify(this.records));
-  }
-
-  porcentajeAsistencia(rec: AttendanceRecord): number {
-    const total = rec.filas.length || 1;
-    const presentes = rec.filas.filter(f => f.estado === 'PRESENTE').length;
-    return Math.round((presentes / total) * 100);
+    return this.getRecords().map(r => r.fechaISO).sort().reverse().slice(0, limit);
   }
 }

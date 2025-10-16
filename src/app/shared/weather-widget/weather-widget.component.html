@@ -1,0 +1,34 @@
+<div class="weather panel p-3 rounded-3 border border-danger-subtle">
+  <div class="alert alert-danger py-1 px-2 mb-2" *ngIf="!svc.hasApiKey()">
+    Configura la API key de OpenWeather en <code>assets/env.js</code> o en <code>environment.ts</code>.
+  </div>
+  <div class="d-flex align-items-center gap-3" *ngIf="!loading(); else loadingTpl">
+    <img *ngIf="iconUrl()" [src]="iconUrl()" alt="Icono del clima" width="64" height="64">
+    <div class="flex-fill">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <strong class="text-warning fs-5">{{ current()?.name }}</strong>
+        <span class="badge rounded-pill text-bg-secondary" *ngIf="current()?.name">{{ current()?.name }}</span>
+        <span class="text-light">{{ current()?.weather?.[0]?.description }}</span>
+      </div>
+      <div class="meta">
+        <span>Temp: <strong>{{ current()?.main?.temp | number:'1.0-0' }}°C</strong></span>
+        <span>Sensación: <strong>{{ current()?.main?.feels_like | number:'1.0-0' }}°C</strong></span>
+        <span>Humedad: <strong>{{ current()?.main?.humidity }}%</strong></span>
+      </div>
+    </div>
+  </div>
+  <ng-template #loadingTpl>
+    <div class="text-secondary">Obteniendo clima…</div>
+  </ng-template>
+  <div class="forecast mt-2 small text-secondary" *ngIf="forecast()?.list?.length">
+    <span class="label">Próximas horas:</span>
+    <span class="badge temp-badge" *ngFor="let it of forecast()?.list | slice:0:5">{{ it.main.temp | number:'1.0-0' }}°C</span>
+  </div>
+  <div class="alert alert-warning mt-2 py-1 px-2" *ngIf="(current()?.weather?.[0]?.icon || '').startsWith('09') || (current()?.weather?.[0]?.icon || '').startsWith('10')">
+    Posible lluvia hoy. Considera actividades bajo techo.
+  </div>
+  <div *ngIf="error()" class="text-danger mt-2">{{ error() }}</div>
+  <div *ngIf="(current()?.weather?.[0]?.main || '') === 'Error'" class="alert alert-danger mt-2 py-1 px-2">
+    {{ current()?.weather?.[0]?.description || 'Error al obtener el clima' }}
+  </div>
+</div>

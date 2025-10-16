@@ -1,0 +1,63 @@
+.student-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #dc3545;
+}
+
+.image-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.image-preview img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #dc3545;
+}
+
+.remove-image {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-image .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.modal.show {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.in {
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #dc3545;
+}
+
+.drop-zone {
+  min-width: 180px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed !important;
+}
+
+.student-avatar.bg-dark {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #dc3545;
+}

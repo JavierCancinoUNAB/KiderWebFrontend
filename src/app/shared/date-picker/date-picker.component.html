@@ -1,0 +1,42 @@
+<div class="date-picker-container">
+  <div class="input-group">
+    <input class="form-control in" type="text" [value]="displayText" readonly (click)="toggle($event)" placeholder="Seleccionar fecha">
+    <button class="btn btn-outline-danger" type="button" (click)="toggle($event)">📅</button>
+  </div>
+
+  <div class="calendar-popup" *ngIf="show()" (click)="$event.stopPropagation()">
+    <div class="calendar-header">
+      <div class="year-controls">
+        <button class="btn-nav" type="button" (click)="prevYear()">«</button>
+        <span class="year-display">{{ year() }}</span>
+        <button class="btn-nav" type="button" (click)="nextYear()">»</button>
+      </div>
+      <div class="month-controls">
+        <button class="btn-nav" type="button" (click)="prevMonth()">‹</button>
+        <span class="month-display">{{ monthName }}</span>
+        <button class="btn-nav" type="button" (click)="nextMonth()">›</button>
+      </div>
+    </div>
+
+    <div class="calendar-body">
+      <div class="weekdays">
+        <div class="weekday">Dom</div><div class="weekday">Lun</div><div class="weekday">Mar</div>
+        <div class="weekday">Mié</div><div class="weekday">Jue</div><div class="weekday">Vie</div><div class="weekday">Sáb</div>
+      </div>
+      <div class="days">
+        <div *ngFor="let d of daysInMonth()"
+             class="day"
+             [class.empty]="!d"
+             [class.selected]="isSelected(d)"
+             [class.today]="isToday(d)"
+             (click)="selectDay(d)">
+          {{ d || '' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="calendar-footer">
+      <button class="btn btn-sm btn-secondary" type="button" (click)="close()">Cerrar</button>
+    </div>
+  </div>
+</div>

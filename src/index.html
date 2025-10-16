@@ -5,11 +5,22 @@
   <title>Kinder Web</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400..700" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
+  <script src="assets/env.js"></script>
+  <script>
+    (function(){
+      function setHeaderH(){
+        var h = document.getElementById('app-header');
+        if (!h) return;
+        var rect = h.getBoundingClientRect();
+        document.body.style.setProperty('--header-h', (rect.height + 12) + 'px');
+      }
+      window.addEventListener('load', setHeaderH);
+      window.addEventListener('resize', setHeaderH);
+      new MutationObserver(setHeaderH).observe(document.body, { childList:true, subtree:true });
+    })();
+  </script>
   <app-root></app-root>
 </body>
 </html>

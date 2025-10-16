@@ -1,93 +1,71 @@
-<section>
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="title m-0">Estudiantes</h1>
-    <div class="d-flex gap-2">
-      <a routerLink="/asistencia" class="btn btn-outline-danger">Agregar Asistencia</a>
-      <a routerLink="/reporte" class="btn btn-outline-danger">Ver % Asistencia</a>
-    </div>
-  </div>
-
+<section class="container-fluid mt-3">
+  <app-weather-widget class="mb-3"></app-weather-widget>
   <div class="row g-3">
     <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let s of sorted()">
-      <article class="card-student" tabindex="0">
-        <div class="thumb" [style.backgroundImage]="'url(' + (s.fotoUrl || 'https://picsum.photos/400?blur=2') + ')'" title="Imagen del estudiante"></div>
-        <div class="info p-2">
-          <h2 class="h5 m-0">{{s.apellido}}, {{s.nombre}}</h2>
-          <p class="mb-2 small">{{s.edad}} años — Nacido en {{s.nacimiento}}</p>
-          <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-danger" (click)="startEdit(s)">Editar</button>
-            <button class="btn btn-sm btn-outline-secondary" (click)="alert(s.descripcion || 'Sin descripción')">Ver descripción</button>
-            <button class="btn btn-sm btn-outline-warning" (click)="deleteStudent(s.id)">Eliminar</button>
+      <div class="card-student p-2 rounded-3 border border-danger-subtle">
+  <img class="student-photo rounded-3"
+       [src]="s.fotoUrl || s.imagen || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=60'"
+       alt="Foto del estudiante"
+       title="Foto del estudiante"
+       [attr.aria-label]="'Foto de ' + s.nombre + ' ' + s.apellido"
+       loading="lazy">
+        <div class="mt-2">
+          <h5 class="m-0">{{ s.apellido }}, {{ s.nombre }}</h5>
+          <small class="text-secondary">{{ s.edad }} años — Nacido en {{ s.nacimiento }}</small>
+          <div class="mt-2">
+            <button *ngIf="s.descripcion" class="btn btn-sm btn-outline-danger" type="button" (click)="selectStudent(s)">
+              Descripción
+            </button>
           </div>
-        </div>
-      </article>
-
-      <!-- Panel de edición inline -->
-      <div class="add-panel mt-2 p-3 rounded-3" *ngIf="editingId() === s.id">
-        <div class="row g-2">
-          <div class="col-md-6"><input class="form-control in" placeholder="Nombre" [(ngModel)]="editData().nombre"></div>
-          <div class="col-md-6"><input class="form-control in" placeholder="Apellido" [(ngModel)]="editData().apellido"></div>
-          <div class="col-md-4"><input class="form-control in" type="number" min="1" max="18" placeholder="Edad" [(ngModel)]="editData().edad"></div>
-          <div class="col-md-8"><input class="form-control in" placeholder="Lugar de nacimiento" [(ngModel)]="editData().nacimiento"></div>
-          <div class="col-12">
-            <textarea class="form-control in" rows="2" placeholder="Descripción" [(ngModel)]="editData().descripcion"></textarea>
-          </div>
-          <div class="col-12">
-            <div class="dropzone" (dragover)="onEditDragOver($event)" (drop)="onEditDrop($event)">
-              <div class="d-flex align-items-center gap-2">
-                <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onEditFileSelect($event)" title="Seleccionar imagen para el estudiante">
-                <label class="btn btn-sm btn-outline-danger m-0">
-                  Seleccionar carpeta
-                  <input type="file" webkitdirectory directory multiple (change)="onEditDirSelect($event)" hidden>
-                </label>
-                <span>Arrastra una imagen o haz clic para seleccionar</span>
-              </div>
-              <div class="preview" *ngIf="editImgPreview()">
-                <img [src]="editImgPreview()" alt="Vista previa" />
-              </div>
-              <div class="text-warning small mt-1" *ngIf="editImgError()">{{editImgError()}}</div>
-            </div>
-          </div>
-        </div>
-        <div class="d-flex gap-2 mt-2">
-          <button class="btn btn-danger" (click)="saveEdit()">Guardar</button>
-          <button class="btn btn-outline-secondary" (click)="cancelEdit()">Cancelar</button>
         </div>
       </div>
     </div>
+
+    <div class="col-12" *ngIf="!students().length">
+      <p class="text-center text-muted">No hay estudiantes registrados</p>
+    </div>
   </div>
 
-  <div class="mt-4">
-    <button class="btn btn-outline-danger" (click)="openAdd()">+ Agregar estudiante</button>
-  </div>
-
-  <div class="add-panel mt-2 p-3 rounded-3" *ngIf="showAdd">
-    <div class="row g-2">
-      <div class="col-md-6"><input class="form-control in" placeholder="Nombre" [(ngModel)]="nuevo.nombre"></div>
-      <div class="col-md-6"><input class="form-control in" placeholder="Apellido" [(ngModel)]="nuevo.apellido"></div>
-      <div class="col-md-4"><input class="form-control in" type="number" min="1" max="18" placeholder="Edad" [(ngModel)]="nuevo.edad"></div>
-      <div class="col-md-8"><input class="form-control in" placeholder="Lugar de nacimiento" [(ngModel)]="nuevo.nacimiento"></div>
-      <div class="col-12">
-        <div class="dropzone" (dragover)="onAddDragOver($event)" (drop)="onAddDrop($event)">
-          <div class="d-flex align-items-center gap-2">
-            <input type="file" accept="image/jpeg,image/png,image/webp" (change)="onAddFileSelect($event)" title="Seleccionar imagen para nuevo estudiante">
-            <label class="btn btn-sm btn-outline-danger m-0">
-              Seleccionar carpeta
-              <input type="file" webkitdirectory directory multiple (change)="onAddDirSelect($event)" hidden>
-            </label>
-            <span>Arrastra una imagen o haz clic para seleccionar</span>
-          </div>
-          <div class="preview" *ngIf="addImgPreview()">
-            <img [src]="addImgPreview()" alt="Vista previa" />
-          </div>
-          <div class="text-warning small mt-1" *ngIf="addImgError()">{{addImgError()}}</div>
-        </div>
+  <button class="btn btn-outline-danger mt-3" type="button" (click)="openAdd()">+ Agregar estudiante</button>
+ 
+  <div class="add-panel mt-2 p-3 rounded-3 border border-danger-subtle" *ngIf="showAdd()">
+    <form>
+      <div class="row g-2">
+        <div class="col-md-6"><input class="form-control in" type="text" [(ngModel)]="nuevo.nombre" name="nombre" placeholder="Nombre" required></div>
+        <div class="col-md-6"><input class="form-control in" type="text" [(ngModel)]="nuevo.apellido" name="apellido" placeholder="Apellido" required></div>
+        <div class="col-md-6"><input class="form-control in" type="number" [(ngModel)]="nuevo.edad" name="edad" placeholder="Edad" min="1" required></div>
+  <div class="col-md-6"><input class="form-control in" type="date" [(ngModel)]="nuevo.nacimiento" name="nacimiento" placeholder="Fecha de nacimiento" required></div>
+        <div class="col-12"><input class="form-control in" type="text" [(ngModel)]="nuevo.fotoUrl" name="fotoUrl" placeholder="URL de foto (opcional)"></div>
+        <div class="col-12"><textarea class="form-control in" [(ngModel)]="nuevo.descripcion" name="descripcion" placeholder="Descripción (opcional)" rows="3"></textarea></div>
       </div>
-      <div class="col-12"><textarea class="form-control in" rows="2" placeholder="Descripción (opcional)" [(ngModel)]="nuevo.descripcion"></textarea></div>
-    </div>
-    <div class="d-flex gap-2 mt-2">
-      <button class="btn btn-danger" (click)="addStudent()">Guardar</button>
-      <button class="btn btn-outline-secondary" (click)="showAdd=false">Cancelar</button>
-    </div>
+      <div class="mt-2">
+        <button class="btn btn-danger" type="button" (click)="agregarEstudiante()">Guardar</button>
+        <button class="btn btn-outline-secondary ms-2" type="button" (click)="openAdd()">Cancelar</button>
+      </div>
+    </form>
   </div>
 </section>
+
+<!-- Modal -->
+<div class="modal fade" [class.show]="showModal()" [style.display]="showModal() ? 'block' : 'none'" tabindex="-1" role="dialog" aria-modal="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header border-danger">
+        <h5 class="modal-title text-warning">{{ selectedStudent()?.nombre }} {{ selectedStudent()?.apellido }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeModal()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Edad:</strong> {{ selectedStudent()?.edad }} años</p>
+        <p><strong>Nacimiento:</strong> {{ selectedStudent()?.nacimiento }}</p>
+        <ng-container *ngIf="selectedStudent()?.descripcion">
+          <p><strong>Descripción:</strong></p>
+          <p>{{ selectedStudent()?.descripcion }}</p>
+        </ng-container>
+      </div>
+      <div class="modal-footer border-danger">
+        <button class="btn btn-secondary" type="button" (click)="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showModal()" *ngIf="showModal()"></div>
